@@ -96,14 +96,14 @@ void @(msg_typename)__write_field_@(member.name)(void *message_handle, @(msg_typ
 
 void * @(msg_typename)__get_field_@(member.name)_message(void *message_handle, int index) {
   @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
-  return &(ros_message->@(member.name)[index]);
+  return &((ros_message->@(member.name))[index]);
 }
 
 int @(msg_typename)__getsize_sequence_field_@(member.name)_message(void *message_handle)
 {
 @[        if isinstance(member.type, AbstractSequence)]@
   @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
-  return sizeof(ros_message->@(member.name)) / sizeof(ros_message->@(member.name)[0]);
+  return (sizeof(ros_message->@(member.name)) / sizeof(ros_message->@(member.name)[0]));
 @[        else]@
   // SHOULD NEVER HAPPEN!!!
   return 0;
