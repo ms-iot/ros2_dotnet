@@ -92,7 +92,49 @@ void @(msg_typename)__write_field_@(member.name)(void *message_handle, @(msg_typ
 
 ////////////////////////////////////////////////////////
 @[    elif isinstance(member.type, AbstractSequence)]@
-// TODO: Sequence types are not supported
+// DOING: Sequence types are not supported
+
+void * @(msg_typename)__get_field_@(member.name)_message(void *message_handle, int index) {
+  @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
+  return &(ros_message->@(member.name)[index]);
+}
+
+int @(msg_typename)__getsize_sequence_field_@(member.name)_message(void *message_handle)
+{
+@[        if isinstance(member.type, AbstractSequence)]@
+  @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
+  return sizeof(ros_message->@(member.name)) / sizeof(ros_message->@(member.name)[0]);
+@[        else]@
+  // SHOULD NEVER HAPPEN!!!
+  return 0;
+@[        end if]@
+}
+
+@[        if isinstance(member.type.value_type, BasicType)]@
+void @(msg_typename)__write_field_@(member.name)(void *message_handle, @(msg_type_to_c(member.type.value_type)) value)
+{
+  @(msg_type_to_c(member.type.value_type)) * ros_message = (@(msg_type_to_c(member.type.value_type)) *)message_handle;
+  *ros_message = value;
+}
+
+@(msg_type_to_c(member.type.value_type)) @(msg_typename)__read_field_@(member.name)(void *message_handle)
+{
+  @(msg_type_to_c(member.type.value_type)) * ros_message = (@(msg_type_to_c(member.type.value_type)) *)message_handle;
+  return *ros_message;
+}
+@[        elif isinstance(member.type.value_type, AbstractString)]@
+void @(msg_typename)__write_field_@(member.name)(void *message_handle, @(msg_type_to_c(member.type.value_type)) value)
+{
+  
+}
+
+@(msg_type_to_c(member.type.value_type)) @(msg_typename)__read_field_@(member.name)(void *message_handle)
+{
+  @(msg_typename) * ros_message = (@(msg_typename)*)message_handle;
+  return ros_message->@(member.name)->data;
+}
+@[        end if]@
+
 @[    elif isinstance(member.type, AbstractWString)]@
 // TODO: Unicode types are not supported
 @[    elif isinstance(member.type, BasicType) or isinstance(member.type, AbstractString)]@
