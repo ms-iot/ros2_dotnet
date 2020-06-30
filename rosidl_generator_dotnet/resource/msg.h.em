@@ -64,6 +64,8 @@ void @(msg_typename)__write_field_@(member.name)(void *, @(msg_type_to_c(member.
 void * @(msg_prefix)_CDECL @(msg_typename)__get_field_@(member.name)_message(void *, int);
 @(msg_prefix)_EXPORT
 int @(msg_prefix)_CDECL @(msg_typename)__getsize_sequence_field_@(member.name)_message();
+@(msg_prefix)_EXPORT
+int @(msg_prefix)_CDECL @(msg_typename)__resize_sequence_field_@(member.name)_message(void *, int);
 
 @[        if isinstance(member.type.value_type, BasicType)]@
 @(msg_prefix)_EXPORT

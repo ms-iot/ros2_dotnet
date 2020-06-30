@@ -96,18 +96,52 @@ void @(msg_typename)__write_field_@(member.name)(void *message_handle, @(msg_typ
 
 void * @(msg_typename)__get_field_@(member.name)_message(void *message_handle, int index) {
   @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
-  return &((ros_message->@(member.name))[index]);
+  return &((ros_message->@(member.name).data)[index]);
 }
 
 int @(msg_typename)__getsize_sequence_field_@(member.name)_message(void *message_handle)
 {
 @[        if isinstance(member.type, AbstractSequence)]@
   @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
-  return (sizeof(ros_message->@(member.name)) / sizeof(ros_message->@(member.name)[0]));
+  return (int)ros_message->@(member.name).size;
 @[        else]@
   // SHOULD NEVER HAPPEN!!!
   return 0;
 @[        end if]@
+}
+
+int @(msg_typename)__resize_sequence_field_@(member.name)_message(void *message_handle, int size)
+{
+  @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
+  if (size <= 0)
+  {
+    return -1;
+  }
+
+  if (size < (int)ros_message->@(member.name).size) 
+  {
+    ros_message->@(member.name).size = size;
+    return 0;
+  } 
+  else if (size > (int)ros_message->@(member.name).size)
+  {
+@[        if isinstance(member.type.value_type, BasicType)]
+    if (ros_message->@(member.name).data)
+    {
+      rosidl_generator_c__@(msg_type_to_c(member.type.value_type).replace('_t', ''))__Sequence__fini(&ros_message->@(member.name));
+    }
+    rosidl_generator_c__@(msg_type_to_c(member.type.value_type).replace('_t', ''))__Sequence__init(&ros_message->@(member.name), size);
+@[        else]
+    //TODO: non-primitive sequences not yet supported!
+    //if (ros_message->@(member.name).data)
+    //{
+    //  WHATHERE??__Sequence__fini(&ros_message->@(member.name));
+    //}
+    //WHATHERE??__Sequence__init(&ros_message->@(member.name), size);
+@[        end if]
+    return 0;
+  }
+  return 0;
 }
 
 @[        if isinstance(member.type.value_type, BasicType)]@
@@ -131,7 +165,7 @@ void @(msg_typename)__write_field_@(member.name)(void *message_handle, @(msg_typ
 @(msg_type_to_c(member.type.value_type)) @(msg_typename)__read_field_@(member.name)(void *message_handle)
 {
   @(msg_typename) * ros_message = (@(msg_typename)*)message_handle;
-  return ros_message->@(member.name)->data;
+  return ros_message->@(member.name).data;
 }
 @[        end if]@
 
