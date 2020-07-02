@@ -25,7 +25,6 @@ using System.Threading.Tasks;
 using ROS2.Common;
 using ROS2.Interfaces;
 using ROS2.Utils;
-using ROS22.QosProfile;
 
 namespace ROS2 {
   internal class NodeDelegates {

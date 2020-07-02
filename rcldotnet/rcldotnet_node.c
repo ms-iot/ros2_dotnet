@@ -26,6 +26,8 @@
 
 #include "rcldotnet_node.h"
 
+static rmw_qos_profile_t retrieve_qos_profile(int);
+
 int32_t native_rcl_create_publisher_handle(void **publisher_handle,
                                            void *node_handle, const char *topic,
                                            void *typesupport,
@@ -66,7 +68,7 @@ int32_t native_rcl_create_subscription_handle(void **subscription_handle,
       rcl_subscription_get_default_options();
   subscription_ops.qos = retrieve_qos_profile(qos_profile_id);
 
-  rcl_ret_t ret =
+d  rcl_ret_t ret =
       rcl_subscription_init(subscription, node, ts, topic, &subscription_ops);
 
   *subscription_handle = (void *)subscription;
