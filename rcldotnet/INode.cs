@@ -16,13 +16,14 @@
 using System;
 using System.Collections.Generic;
 using ROS2.Interfaces;
+using ROS2.Utils;
 
 namespace ROS2 {
     public interface INode {
         IList<ISubscriptionBase> Subscriptions { get; }
 
-        IPublisher<T> CreatePublisher<T> (string topic) where T : IMessage;
+        IPublisher<T> CreatePublisher<T> (string topic, QosProfile.Profile profile_id) where T : IMessage;
 
-        ISubscription<T> CreateSubscription<T> (string topic, Action<T> callback) where T : IMessage, new ();
+        ISubscription<T> CreateSubscription<T> (string topic, Action<T> callback, QosProfile.Profile profile_id) where T : IMessage, new ();
     }
 }

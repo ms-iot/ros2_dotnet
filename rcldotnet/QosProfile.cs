@@ -1,10 +1,10 @@
 
 
-namespace ROS22
+namespace ROS2.Utils
 {
     public static class QosProfile
     {
-        public static enum Profile 
+        public enum Profile 
         {
             SENSOR_DATA = 0,
             PROFILE_PARAMETERS = 1,
