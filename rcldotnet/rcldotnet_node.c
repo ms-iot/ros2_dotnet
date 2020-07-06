@@ -68,7 +68,7 @@ int32_t native_rcl_create_subscription_handle(void **subscription_handle,
       rcl_subscription_get_default_options();
   subscription_ops.qos = retrieve_qos_profile(qos_profile_id);
 
-d  rcl_ret_t ret =
+  rcl_ret_t ret =
       rcl_subscription_init(subscription, node, ts, topic, &subscription_ops);
 
   *subscription_handle = (void *)subscription;

@@ -11,19 +11,19 @@ namespace ROS2.Utils
         {
             /// <summary> Prioritizes timely readings, rather than 
             /// ensuring they all arrive. Best effort reliability and smaller queue depth. </summary>
-            SENSOR_DATA = 0,
+            SensorData = 0,
             /// <summary> For use in services. Has large queue depth so that requests are not lost
             /// when waiting for client/server to respond. </summary>
-            PROFILE_PARAMETERS = 1,
+            ProfileParameters = 1,
             /// <summary> The most similar profile to ROS1 behavior. Reliable, volatile durability, "keep last" history. </summary>
-            DEFAULT = 2,
+            Default = 2,
             /// <summary> For use in services. Reliable, with volatile durability to
             /// ensure that service servers who restart don't recieve outdated requests </summary>
-            SERVICES_DEFAULT = 3,
+            ServicesDefault = 3,
             /// <summary> Has a large queue depth to ensure requests are not lost. </summary>
-            PARAMETER_EVENTS = 4,
+            ParameterEvents = 4,
             /// <summary> Uses the RMW implementation's default values. </summary>
-            SYSTEM_DEFAULTS = 5,
+            SystemDefaults = 5,
         }
     }
 }
