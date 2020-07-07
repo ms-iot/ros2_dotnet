@@ -126,6 +126,14 @@ int @(msg_typename)__resize_sequence_field_@(member.name)_message(void *message_
       rosidl_generator_c__@(sub("_t$", "", msg_type_to_c(member.type.value_type)))__Sequence__fini(&ros_message->@(member.name));
     }
     return rosidl_generator_c__@(sub("_t$", "", msg_type_to_c(member.type.value_type)))__Sequence__init(&ros_message->@(member.name), size) ? 0 : -1;
+@[        else if isinstance(member.type.value_type, NamespacedType)]@
+@{
+    namespaced_member_name = '%s__%s' % ('__'.join(member.type.value_type.namespaces), member.type.value_type.name)
+}@
+    if (ros_message->@(member.name).data) {
+      @(namespaced_member_name)__Sequence__fini(&ros_message->@(member.name));
+    }
+    return @(namespaced_member_name)__Sequence__init(&ros_message->@(member.name), size) ? 0 : -1;
 @[        else]@
     //TODO: non-primitive sequences not yet supported!
     return -1;
