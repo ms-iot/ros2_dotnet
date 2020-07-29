@@ -29,6 +29,7 @@ find_package(geometry_msgs REQUIRED)
 
 set(CS_SOURCES
   TransformListener.cs
+  RclCppDotnet.cs
 )
 
 foreach(_assembly_dep ${rcldotnet_common_ASSEMBLIES_DLL})

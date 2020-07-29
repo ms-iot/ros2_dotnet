@@ -1,6 +1,20 @@
 #ifndef RCL_DOTNET_TFL
 #define RCL_DOTNET_TFL
 
+typedef struct TfVector3 {
+    double x;
+    double y;
+    double z;
+} *TfVector3Ptr;
+
+typedef struct TfQuaternion {
+    double x;
+    double y;
+    double z;
+    double w;
+} *TfQuaternionPtr;
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,13 +33,10 @@ extern "C" {
 		char* from, char* to, void* t);
 
 	__declspec(dllexport)
-	double __cdecl native_retrieve_translation_x(void* tf);
+	bool __cdecl native_retrieve_translation(void* tf, TfVector3Ptr vec);
 
-	__declspec(dllexport)
-	double __cdecl native_retrieve_translation_y(void* tf);
-
-	__declspec(dllexport)
-	double __cdecl native_retrieve_translation_z(void* tf);
+    __declspec(dllexport)
+	bool __cdecl native_retrieve_rotation(void* tf, TfQuaternionPtr quat);
 
 #ifdef __cplusplus
 }

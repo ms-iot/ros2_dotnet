@@ -30,14 +30,31 @@ void* native_lookup_transform(void* buf,
 	return outputVar;
 }
 
-double native_retrieve_translation_x(void* tf) {
-	return ((geometry_msgs::msg::TransformStamped*)tf)->transform.translation.x;
+bool native_retrieve_translation(void* tf, TfVector3Ptr vec) {
+	try {
+		auto castedTf = (geometry_msgs::msg::TransformStamped*)tf;
+		vec->x = tf->transform.translation.x;
+		vec->y = tf->transform.translation.y;
+		vec->z = tf->transform.translation.z;
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
+	return false;
 }
 
-double native_retrieve_translation_y(void* tf) {
-	return ((geometry_msgs::msg::TransformStamped*)tf)->transform.translation.y;
-}
-
-double native_retrieve_translation_z(void* tf) {
-	return ((geometry_msgs::msg::TransformStamped*)tf)->transform.translation.z;
+bool native_retrieve_rotation(void* tf, TfQuaternionPtr quat) {
+	try {
+		auto castedTf = (geometry_msgs::msg::TransformStamped*)tf;
+		quat->x = tf->transform.rotation.x;
+		quat->y = tf->transform.rotation.y;
+		quat->z = tf->transform.rotation.z;
+		quat->w = tf->transform.rotation.w;
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
+	return false;
 }
