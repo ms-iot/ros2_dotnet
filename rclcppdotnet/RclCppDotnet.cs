@@ -1,4 +1,10 @@
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text;
+
 using ROS2.Common;
 using ROS2.Interfaces;
 using ROS2.Utils;
@@ -8,14 +14,14 @@ namespace ROS2 {
         internal static readonly DllLoadUtils dllLoadUtils;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void NativeRclcppInitType();
+        internal delegate void NativeRclcppInitType();
         internal static NativeRclcppInitType native_rclcpp_init = null;
 
         static RclCppDotnetDelegates() {
             dllLoadUtils = DllLoadUtilsFactory.GetDllLoadUtils();
             IntPtr pDll = dllLoadUtils.LoadLibrary("rclcppdotnet");
 
-            IntPtr native_rclcpp_init_ptr = dllLoadUtils.GetProcAddress(nativeLib, "native_rclcpp_init");
+            IntPtr native_rclcpp_init_ptr = dllLoadUtils.GetProcAddress(pDll, "native_rclcpp_init");
             RclCppDotnetDelegates.native_rclcpp_init = (NativeRclcppInitType)Marshal.GetDelegateForFunctionPointer(
                 native_rclcpp_init_ptr, typeof(NativeRclcppInitType));
         }

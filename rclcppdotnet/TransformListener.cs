@@ -1,6 +1,12 @@
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Text;
 using System.Runtime.InteropServices;
+
+using ROS2.Common;
+using ROS2.Interfaces;
 using ROS2.Utils;
 
 namespace ROS2 {
@@ -62,7 +68,7 @@ namespace ROS2 {
                 native_retrieve_translation_ptr, typeof(NativeRetrieveTranslationType));
 
             IntPtr native_retrieve_rotation_ptr = dllLoadUtils.GetProcAddress(nativeLibTFL, "native_retrieve_rotation");
-            TransformListenerDelegates.native_retrieve_translation = (NativeRetrieveRotationType)Marshal.GetDelegateForFunctionPointer(
+            TransformListenerDelegates.native_retrieve_rotation = (NativeRetrieveRotationType)Marshal.GetDelegateForFunctionPointer(
                 native_retrieve_rotation_ptr, typeof(NativeRetrieveRotationType));
         }
     }
@@ -70,20 +76,26 @@ namespace ROS2 {
     [StructLayout(LayoutKind.Sequential)]
     public struct TfVector3
     {
-        double x;
-        double y;
-        double z;
+        public double x;
+        public double y;
+        public double z;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct TfQuaternion
     {
-        double x;
-        double y;
-        double z;
-        double w;
+        public double x;
+        public double y;
+        public double z;
+        public double w;
     }
 
+    /// <summary>
+    /// Grants access to the TransformListener, a node on the ROS2 network
+    /// that manages the /tf and /tf_static subscriptions.
+    /// All TransformListener instances in .NET share a single node, created 
+    /// upon construction of the first TransformListener.
+    /// </summary>
     public class TransformListener {
         private static IntPtr buf = IntPtr.Zero;
         private static IntPtr listener = IntPtr.Zero;
@@ -92,28 +104,60 @@ namespace ROS2 {
         {
             if (buf == IntPtr.Zero)
             {
-                buf = native_construct_buffer();
+                buf = TransformListenerDelegates.native_construct_buffer();
             }
 
             if (listener == IntPtr.Zero)
             {
-                listener = native_construct_listener(buf);
+                listener = TransformListenerDelegates.native_construct_listener(buf);
             }
         }
 
-        public TfVector3 LookupTranslation(string from, string to) 
+        /// <summary>
+        /// Returns the ROS2 translation between frames 'from' and 'to', or null
+        /// if one or more of the frames do not exist.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public TfVector3? LookupTranslation(string from, string to) 
         {
-            IntPtr transformHandle = TransformListenerDelegates.native_lookup_transform(buf,
-                from, to, native_construct_time(0, 0));
+            IntPtr transformHandle = IntPtr.Zero;
+            try
+            {
+                transformHandle = TransformListenerDelegates.native_lookup_transform(buf,
+                    from, to, TransformListenerDelegates.native_construct_time(0, 0));
+            } catch (Exception e)  // unfortunately cannot differentiate between what native exception happened
+            {
+                // drop exceptions due to frame not existing (assumes tf2::LookupException)
+                return null;
+            }
+
             TfVector3 output = new TfVector3();
             TransformListenerDelegates.native_retrieve_translation(transformHandle, out output);
             return output;
         }
 
-        public TfQuaternion LookupRotation(string from, string to)
+        /// <summary>
+        /// Returns the ROS2 rotation between frames 'from' and 'to', or null
+        /// if one or more of the frames do not exist.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public TfQuaternion? LookupRotation(string from, string to)
         {
-            IntPtr transformHandle = TransformListenerDelegates.native_lookup_transform(buf,
-                from, to, native_construct_time(0, 0));
+            IntPtr transformHandle = IntPtr.Zero;
+            try
+            {
+                transformHandle = TransformListenerDelegates.native_lookup_transform(buf,
+                    from, to, TransformListenerDelegates.native_construct_time(0, 0));
+            } catch (Exception e)  // unfortunately cannot differentiate between what native exception happened
+            {
+                // drop exceptions due to frame not existing (assumes tf2::LookupException)
+                return null;
+            }
+
             TfQuaternion output = new TfQuaternion();
             TransformListenerDelegates.native_retrieve_rotation(transformHandle, out output);
             return output;
