@@ -27,13 +27,13 @@ header_filename = "{0}/rcldotnet_{1}.h".format('/'.join(message.structure.namesp
 #include <stdint.h>
 
 #include <@('/'.join(message.structure.namespaced_type.namespaces))/@(convert_camel_case_to_lower_case_underscore(type_name)).h>
-#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_runtime_c/message_type_support_struct.h"
 
-#include <rosidl_generator_c/string.h>
-#include <rosidl_generator_c/string_functions.h>
+#include <rosidl_runtime_c/string.h>
+#include <rosidl_runtime_c/string_functions.h>
 
-#include <rosidl_generator_c/primitives_sequence.h>
-#include <rosidl_generator_c/primitives_sequence_functions.h>
+#include <rosidl_runtime_c/primitives_sequence.h>
+#include <rosidl_runtime_c/primitives_sequence_functions.h>
 
 
 #include "@(header_filename)"
@@ -42,7 +42,9 @@ header_filename = "{0}/rcldotnet_{1}.h".format('/'.join(message.structure.namesp
 @[for member in message.structure.members]@
 @[    if isinstance(member.type, AbstractSequence)]@
 @[        if isinstance(member.type.value_type, NamespacedType)]@
-#include "@('/'.join(member.type.value_type.namespaces))/@(convert_camel_case_to_lower_case_underscore(member.type.value_type.name))__functions.h"
+#include "@('/'.join(member.type.value_type.namespaces))/detail/@(convert_camel_case_to_lower_case_underscore(member.type.value_type.name))__struct.h"
+#include "@('/'.join(member.type.value_type.namespaces))/detail/@(convert_camel_case_to_lower_case_underscore(member.type.value_type.name))__functions.h"
+#include "@('/'.join(member.type.value_type.namespaces))/detail/@(convert_camel_case_to_lower_case_underscore(member.type.value_type.name))__type_support.h"
 @[        end if]@
 @[    end if]@
 @[end for]@
@@ -132,9 +134,9 @@ int @(msg_typename)__resize_sequence_field_@(member.name)_message(void *message_
   else if (size > (int)ros_message->@(member.name).size) {
 @[        if isinstance(member.type.value_type, BasicType)]@
     if (ros_message->@(member.name).data) {
-      rosidl_generator_c__@(sub("_t$", "", msg_type_to_c(member.type.value_type)))__Sequence__fini(&ros_message->@(member.name));
+      rosidl_runtime_c__@(sub("_t$", "", msg_type_to_c(member.type.value_type)))__Sequence__fini(&ros_message->@(member.name));
     }
-    return rosidl_generator_c__@(sub("_t$", "", msg_type_to_c(member.type.value_type)))__Sequence__init(&ros_message->@(member.name), size) ? 0 : -1;
+    return rosidl_runtime_c__@(sub("_t$", "", msg_type_to_c(member.type.value_type)))__Sequence__init(&ros_message->@(member.name), size) ? 0 : -1;
 @[        elif isinstance(member.type.value_type, NamespacedType)]@
     if (ros_message->@(member.name).data) {
       @('%s__%s' % ('__'.join(member.type.value_type.namespaces), member.type.value_type.name))__Sequence__fini(&ros_message->@(member.name));
@@ -184,7 +186,7 @@ void @(msg_typename)__write_field_@(member.name)(void *message_handle, @(msg_typ
 void @(msg_typename)__write_field_@(member.name)(void * message_handle, @(msg_type_to_c(member.type)) value) {
   @(msg_typename) * ros_message = (@(msg_typename) *)message_handle;
 @[        if isinstance(member.type, AbstractGenericString)]@
-  rosidl_generator_c__String__assign(
+  rosidl_runtime_c__String__assign(
     &ros_message->@(member.name), value);
 @[        else]@
   ros_message->@(member.name) = value;
